@@ -41,15 +41,16 @@ export const addCompany = async (req,res,next)=>{
 }
 //update company
 export const updateCompany = async (req,res,next)=>{
+    const {companyId} = req.params
     const companyExist = await Company.findOne({_id:req.authUser._id,company_HR:req.authUser._id})
     if(!companyExist){
         next(new AppError("not athorized" , 409))
     }
-    const checkExist = await Company.findOne({$or:[{companyemail},{companyname}]})
+    const checkExist = await Company.findOne({$or:[{companyId},{companyname}]})
     if(checkExist){
         return next(AppError("duplicated", 409))
     }
-    const update = await Company.updateOne({_id:req.authUser._id},req.body)
+    const update = await Company.updateOne({_id:req.params._id},req.body)
     if(!update){
         return next(AppError(messages.company.notFound, 404))
     }
@@ -76,7 +77,7 @@ export const getCompanyData = async (req,res,next)=>{
     //get data from req
     const {_id} = req.params
      //check existance
-     const companyExist = await Company.findOne({_id:req.authUser._id})
+     const companyExist = await Company.findOne({_id:req.params._id})
      if(companyExist){
         next(new AppError(messages.company.notFound, 404))
      }
@@ -105,7 +106,7 @@ export const getAllApplications = async (req,res,next)=>{
     // get data from req
     const {jobid,userid,userTechSkills,userSoftSkills,userResume} = req.body
     const {id} = req.authUser.id
-    const getApps = await Company.findOne({$or:[{jobid},{userid},{id}]})
+    const getApps = await Company.findById({$or:[{jobid},{userid},{id}]}).populate({companyId})
     return res.status(200).json({message:"Done",success:true,
         data:getApps
 

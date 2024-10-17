@@ -13,7 +13,7 @@ export const signup = async (req , res , next)=>{
     // get data from req
     let {firstname , lastname, username, email, recoveryemail, password, mobilenumber, DOB} = req.body
      // check existance
-     const userExist = await User.findOne({$or: [{email}, {password}]})
+     const userExist = await User.findOne({$or: [{email}, {mobilenumber}]})
      if(userExist){
          return next(new AppError(messages.user.alreadyExist , 409))
      }
@@ -129,13 +129,10 @@ export const deleteUser = async (req,res,next)=>{
 }
 // get user account
 export const getUserAccount = async (req,res,next)=>{
-    const userAccount = await User.find()
-    if(!userAccount){
-        next(new AppError(messages.user.notFound, 404))
-    }
+  
     return res.status(200).json({message:"Done",
         success:true,
-        data:userAccount
+        data:req.authUser
     })
 
 }

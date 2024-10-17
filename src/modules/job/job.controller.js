@@ -96,7 +96,7 @@ export const getAllJobs = async (req,res,next)=>{
 export const getSpecificJob = async (req,res,next)=>{
     // get data from req
     const {companyName} = req.body
-    const company = await Company.findById(companyName)
+    const company = await Company.findOne({companyName})
     if(company){
         next(new AppError("no companies found"))
     }
